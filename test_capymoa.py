@@ -34,11 +34,11 @@ from pprint import pprint  # Import pprint module
 #                         skip_header=True,
 #                         )
 
-path_to_csv_or_arff = Path("test_data.csv")
+path_to_csv_or_arff = Path("/home/bd65/Downloads/power_plant/MHPA-docs-data.csv")
 class_index: int = 12,
 target_type: str = "numeric"  # "numeric" or "categorical"
 
-x_features = pd.read_csv(path_to_csv_or_arff).to_numpy()
+x_features = pd.read_csv(path_to_csv_or_arff).fillna(0).to_numpy()
 #np.genfromtxt(path_to_csv_or_arff, delimiter=",", skip_header=1)
 
 print(x_features[0])
@@ -71,14 +71,17 @@ ARF_learner = AdaptiveRandomForestRegressor(schema=fried_stream.get_schema(), en
 knnreg = KNNRegressor(schema=fried_stream.get_schema(), k=3, window_size=1000)
 
 results_arf = prequential_evaluation(stream=fried_stream, learner=ARF_learner, window_size=5000)
-results_knnreg = prequential_evaluation(stream=fried_stream, learner=knnreg, window_size=5000)
+#results_knnreg = prequential_evaluation(stream=fried_stream, learner=knnreg, window_size=5000)
 
 pprint(results_arf['windowed'].metrics_per_window())
+pprint(results_arf)
+#pprint(results_knnreg['windowed'].metrics_per_window())
+#pprint(results_knnreg)
 # Selecting the metric so that we don't use the default one.
 # Note that the metric is different from the ylabel parameter, which just overrides the y-axis label.
 
 
-pprint(results_arf)
+
 
 #plot_windowed_results(results_arf, results_knnreg, metric="coefficient of determination")
 
