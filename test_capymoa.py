@@ -1,15 +1,10 @@
-from capymoa.regressor import FIMTDD
-from capymoa.base import MOARegressor
 from capymoa.regressor import KNNRegressor, AdaptiveRandomForestRegressor
-from capymoa.stream import stream_from_file
-from capymoa.stream import CSVStream, stream_from_file
 from capymoa.stream._stream import NumpyStream
 from capymoa.evaluation import prequential_evaluation
 from capymoa.evaluation.visualization import plot_windowed_results
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from IPython.display import display
 from pprint import pprint  # Import pprint module
 
 #fried_stream = stream_from_file("../power_plant/test_data.csv", target="SlrW_Avg", drop=["TmStamp", "RecNum", "SlrMJ_Tot"])
@@ -44,10 +39,11 @@ x_features = pd.read_csv(path_to_csv_or_arff).fillna(0).to_numpy()
 print(x_features[0])
 print(x_features.shape)
 print(np.shape(x_features))
+
 # columns: TmStamp,RecNum,batt_volt,mean_wind_speed,mean_wind_direction,std_wind_dir,Max_Gust_Min,Max_Gust_Hr,
 # Rain_mm,Barametric_Avg,Air_Temp_Avg,RH_Avg,SlrW_Avg,SlrMJ_Tot,in_bytes_str,Dew_Point_Avg
-
 # target is SlrW_Avg
+
 targets = x_features[:, class_index]
 
 # remove slrw_avg, slrmj_tot, recnum, tmstamp from x_features
@@ -59,7 +55,7 @@ x_features = np.delete(x_features, 0, axis=1) # remove recnum
 x_features = np.delete(x_features, 0, axis=1) # remove tmstamp
 
 
-fried_stream = NumpyStream(
+stream = NumpyStream(
     x_features,
     targets,
     target_type=target_type,
@@ -67,10 +63,10 @@ fried_stream = NumpyStream(
 )
 
 
-ARF_learner = AdaptiveRandomForestRegressor(schema=fried_stream.get_schema(), ensemble_size=10)
-knnreg = KNNRegressor(schema=fried_stream.get_schema(), k=3, window_size=1000)
+ARF_learner = AdaptiveRandomForestRegressor(schema=stream.get_schema(), ensemble_size=10)
+knnreg = KNNRegressor(schema=stream.get_schema(), k=3, window_size=1000)
 
-results_arf = prequential_evaluation(stream=fried_stream, learner=ARF_learner, window_size=5000)
+results_arf = prequential_evaluation(stream=stream, learner=ARF_learner, window_size=5000)
 #results_knnreg = prequential_evaluation(stream=fried_stream, learner=knnreg, window_size=5000)
 
 pprint(results_arf['windowed'].metrics_per_window())
