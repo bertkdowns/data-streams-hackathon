@@ -1,5 +1,5 @@
 from river import linear_model
-from river.metrics import MSE
+from river.metrics import RMSE
 from river.evaluate import progressive_val_score
 from river import stream
 from river import forest
@@ -26,7 +26,7 @@ def parse_float(x):
 dataset = stream.iter_csv('../power_plant/test_data.csv', 
                         target="SlrW_Avg",
                         converters={
-                            'Rain_mm':int,
+                            'Rain_mm':parse_float,
                             'batt_volt': parse_float,
                             'mean_wind_speed': parse_float,
                             'mean_wind_direction': parse_float,
@@ -52,10 +52,10 @@ model = forest.ARFRegressor()
 
 score = progressive_val_score(dataset=dataset,
                         model=model,
-                        metric=MSE(),
+                        metric=RMSE(),
                         show_memory=True,
                         show_time=True,
-                        print_every=50000)  #gives us the current Metric every X datapoint
+                        print_every=5000)  #gives us the current Metric every X datapoint
 
 print(score)
 
