@@ -83,8 +83,12 @@ class GaussianRandomRegressor(Regressor):
     
     def train(self, instance:RegressionInstance):
         """Update the mean and standard deviation values seen during training."""
-        self.mean = (self.mean + instance.y_value) / 2
-        self.std_dev = (self.std_dev + abs(instance.y_value - self.mean)) / 2
+        if self.mean == 0 and self.std_dev == 0:
+            self.mean = instance.y_value
+            self.std_dev = 0
+            return
+        self.mean = (self.mean * 99999 + instance.y_value) / 100000
+        self.std_dev = (self.std_dev * 99999 + (instance.y_value - self.mean)**2) / 100000
         return
     
     def predict(self, instance:RegressionInstance) -> int:
