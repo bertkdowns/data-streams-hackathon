@@ -56,8 +56,8 @@ class LastGuessRegressor(Regressor):
 
 
 class RandomRegressor(Regressor):
-    min = 99999999999
-    max = -999999999
+    min = 99999999999.0
+    max = -999999999.0
     
     def train(self, instance:RegressionInstance):
         """Update the min and max values seen during training."""
@@ -67,7 +67,7 @@ class RandomRegressor(Regressor):
             self.max = instance.y_value
         return
     
-    def predict(self, instance:RegressionInstance) -> int:
+    def predict(self, instance:RegressionInstance):
         """Return a random integer between the min and max values seen during training."""
         if self.min == 99999999999 or self.max == -999999999:
             return 0 # initial guess
